@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>花蓮旅遊App（單檔版）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body { font-family: Arial; margin:0; background:#f5f5f5; }
+header { background:#0077cc; color:white; padding:15px; text-align:center; }
+
+.day-title {
+  padding:10px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.card {
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.time { font-weight:bold; margin-bottom:5px; }
+
+.btn {
+  display:inline-block;
+  margin:5px 5px 0 0;
+  padding:8px 12px;
+  border-radius:8px;
+  background:#0077cc;
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.parking { background:#28a745; }
+.route { background:#ff6600; }
+
+.done { opacity:0.5; text-decoration: line-through; }
+</style>
+</head>
+
+<body>
+
+<header>🌊 花蓮旅遊App（單檔版）</header>
+
+<!-- DAY 1 -->
+<div class="day-title">📅 Day 1</div>
+
+<div class="card">
+<div class="time">11:30 山下陳涼</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=山下陳涼" target="_blank">📍導航</a>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&destination=山下陳涼" target="_blank">🚗開車</a>
+</div>
+
+<div class="card">
+<div class="time">13:30 花蓮文創園區</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=花蓮文化創意產業園區" target="_blank">📍導航</a>
+<a class="btn parking" href="https://www.google.com/maps/search/?api=1&query=花蓮文創園區停車場" target="_blank">🅿️停車</a>
+</div>
+
+<div class="card">
+<div class="time">15:00 冠冕民宿</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=冠冕民宿 旗艦店" target="_blank">📍導航</a>
+</div>
+
+<div class="card">
+<div class="time">19:00 東大門夜市</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=東大門夜市 花蓮" target="_blank">📍導航</a>
+<a class="btn parking" href="https://www.google.com/maps/search/?api=1&query=東大門夜市停車場" target="_blank">🅿️停車</a>
+</div>
+
+<!-- DAY 2 -->
+<div class="day-title">📅 Day 2</div>
+
+<div class="card">
+<div class="time">10:30 V TREE COFFEE</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=V TREE COFFEE 花蓮" target="_blank">📍導航</a>
+</div>
+
+<div class="card">
+<div class="time">13:00 花蓮美術館</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=花蓮美術館" target="_blank">📍導航</a>
+<a class="btn parking" href="https://www.google.com/maps/search/?api=1&query=花蓮美術館停車場" target="_blank">🅿️停車</a>
+</div>
+
+<div class="card">
+<div class="time">14:30 小吃巡禮（公正 / 周家 / 廟口紅茶）</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=公正包子 花蓮" target="_blank">公正包子</a>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=周家蒸餃 花蓮" target="_blank">周家蒸餃</a>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=廟口紅茶 花蓮" target="_blank">廟口紅茶</a>
+</div>
+
+<div class="card">
+<div class="time">17:00 全聯採買</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=全聯 吉安南濱店" target="_blank">📍導航</a>
+</div>
+
+<!-- DAY 3 -->
+<div class="day-title">📅 Day 3</div>
+
+<div class="card">
+<div class="time">08:00 斑比早餐</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=斑比早餐店 花蓮" target="_blank">📍導航</a>
+</div>
+
+<div class="card">
+<div class="time">10:00 回程（礁溪）</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&destination=福哥石窯雞 礁溪" target="_blank">🚗導航</a>
+</div>
+
+<script>
+function toggle(btn){
+  btn.parentElement.classList.toggle("done");
+}
+</script>
+
+</body>
+</html>
