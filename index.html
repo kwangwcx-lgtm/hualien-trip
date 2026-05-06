@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>花蓮旅遊App V2</title>
+<title>花蓮旅遊App V3</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -15,7 +15,6 @@ header {
   text-align:center;
 }
 
-/* 上方導航 */
 .nav {
   position: sticky;
   top: 0;
@@ -35,7 +34,27 @@ header {
   color:white;
 }
 
-/* 卡片 */
+/* 路線卡片 */
+.route-box {
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.route-btn {
+  display:block;
+  margin:10px auto;
+  padding:10px;
+  border-radius:10px;
+  background:#ff6600;
+  color:white;
+  text-decoration:none;
+  width:80%;
+}
+
 .day-title {
   padding:10px;
   font-size:18px;
@@ -73,9 +92,27 @@ header {
 
 <body>
 
-<header>🌊 花蓮旅遊App V2</header>
+<header>🌊 花蓮旅遊App V3</header>
 
-<!-- 🔥 Day切換 -->
+<!-- 🚗 一鍵最佳路線 -->
+<div class="route-box">
+<h3>🚗 一鍵最佳路線</h3>
+
+<a class="route-btn" 
+href="https://www.google.com/maps/dir/?api=1&origin=山下陳涼&destination=東大門夜市 花蓮&waypoints=花蓮文化創意產業園區|冠冕民宿 旗艦店"
+target="_blank">
+Day 1 最佳路線
+</a>
+
+<a class="route-btn" 
+href="https://www.google.com/maps/dir/?api=1&origin=V TREE COFFEE 花蓮&destination=全聯 吉安南濱店&waypoints=花蓮美術館|公正包子 花蓮"
+target="_blank">
+Day 2 最佳路線
+</a>
+
+</div>
+
+<!-- Day 切換 -->
 <div class="nav">
   <button onclick="goTo('day1')">Day 1</button>
   <button onclick="goTo('day2')">Day 2</button>
@@ -93,7 +130,7 @@ header {
 </div>
 
 <div class="card">
-<div class="time">➡️ 前往花蓮文創園區</div>
+<div class="time">➡️ 前往文創園區</div>
 <div class="drive">🚗 約 5 分鐘</div>
 <a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=山下陳涼&destination=花蓮文化創意產業園區" target="_blank">導航</a>
 </div>
@@ -118,7 +155,7 @@ header {
 </div>
 
 <div class="card">
-<div class="time">➡️ 前往東大門夜市</div>
+<div class="time">➡️ 前往夜市</div>
 <div class="drive">🚗 約 8 分鐘</div>
 <a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=冠冕民宿 旗艦店&destination=東大門夜市 花蓮" target="_blank">導航</a>
 </div>
@@ -142,7 +179,7 @@ header {
 </div>
 
 <div class="card">
-<div class="time">➡️ 前往花蓮美術館</div>
+<div class="time">➡️ 前往美術館</div>
 <div class="drive">🚗 約 8 分鐘</div>
 <a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=V TREE COFFEE 花蓮&destination=花蓮美術館" target="_blank">導航</a>
 </div>
@@ -174,13 +211,13 @@ header {
 <div class="day-title">📅 Day 3</div>
 
 <div class="card">
-<div class="time">08:00 斑比早餐</div>
+<div class="time">08:00 早餐</div>
 <button onclick="toggle(this)">✅完成</button><br>
 <a class="btn" href="https://www.google.com/maps/search/?api=1&query=斑比早餐店 花蓮" target="_blank">📍導航</a>
 </div>
 
 <div class="card">
-<div class="time">➡️ 前往礁溪</div>
+<div class="time">➡️ 福哥石窯雞 礁溪總店</div>
 <div class="drive">🚗 約 2.5 小時</div>
 <a class="btn route" href="https://www.google.com/maps/dir/?api=1&destination=福哥石窯雞 礁溪" target="_blank">導航</a>
 </div>
