@@ -1,712 +1,236 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>花蓮旅遊 App Google Maps 版</title>
+<meta charset="UTF-8">
+<title>花蓮旅遊App V3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+body { font-family: Arial; margin:0; background:#f5f5f5; }
 
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#f4f4f4;
-  color:#222;
-}
-
-header{
-  background:#007AFF;
+header {
+  background:#0077cc;
   color:white;
+  padding:15px;
   text-align:center;
-  padding:18px;
-  font-size:24px;
-  font-weight:700;
 }
 
-/* Google Maps */
-#mapFrame{
-  width:100%;
-  height:320px;
-  border:none;
-}
-
-/* 定位資訊 */
-#locationInfo{
-  background:white;
-  padding:14px;
-  font-size:15px;
-  line-height:1.6;
-  border-bottom:1px solid #ddd;
-}
-
-/* 工具列 */
-.top-tools{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding:12px;
-  background:white;
-  border-bottom:1px solid #ddd;
-}
-
-.top-tools button{
-  white-space:nowrap;
-}
-
-/* Day導航 */
-.nav{
-  position:sticky;
-  top:0;
-  z-index:999;
-  display:flex;
-  justify-content:space-around;
+.nav {
+  position: sticky;
+  top: 0;
   background:white;
   padding:10px;
+  display:flex;
+  justify-content:space-around;
   border-bottom:1px solid #ddd;
+  z-index:100;
 }
 
-.nav button{
-  background:#007AFF;
-  color:white;
+.nav button {
+  padding:8px 12px;
   border:none;
-  border-radius:12px;
-  padding:10px 16px;
-  font-size:14px;
-  font-weight:600;
+  border-radius:8px;
+  background:#0077cc;
+  color:white;
 }
 
-/* 區塊 */
-.day-title{
-  padding:16px 14px 6px;
-  font-size:22px;
-  font-weight:700;
-}
-
-.card{
+/* 路線卡片 */
+.route-box {
   background:white;
-  margin:12px;
-  border-radius:20px;
-  padding:16px;
-  box-shadow:0 3px 10px rgba(0,0,0,0.08);
-}
-
-.place{
-  font-size:19px;
-  font-weight:700;
-}
-
-.time{
-  margin-top:8px;
-  color:#ff6600;
-  font-size:15px;
-}
-
-.btn-group{
-  margin-top:14px;
-}
-
-.btn{
-  display:inline-block;
-  border:none;
+  margin:10px;
+  padding:15px;
   border-radius:12px;
-  padding:10px 14px;
-  margin-right:8px;
-  margin-top:8px;
-  text-decoration:none;
-  color:white;
-  background:#007AFF;
-  font-size:14px;
-  cursor:pointer;
+  text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-.route-btn{
+.route-btn {
+  display:block;
+  margin:10px auto;
+  padding:10px;
+  border-radius:10px;
   background:#ff6600;
+  color:white;
+  text-decoration:none;
+  width:80%;
 }
 
-.done{
-  opacity:0.45;
-  text-decoration:line-through;
+.day-title {
+  padding:10px;
+  font-size:18px;
+  font-weight:bold;
 }
 
+.card {
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.time { font-weight:bold; }
+.drive { color:#ff6600; font-size:14px; margin:5px 0; }
+
+.btn {
+  display:inline-block;
+  margin:5px 5px 0 0;
+  padding:8px 12px;
+  border-radius:8px;
+  background:#0077cc;
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.parking { background:#28a745; }
+.route { background:#ff6600; }
+
+.done { opacity:0.5; text-decoration: line-through; }
 </style>
 </head>
 
 <body>
 
-<header>
-🌊 花蓮旅遊 App
-</header>
+<header>🌊 花蓮旅遊App V3</header>
 
-<!-- Google Maps -->
-<iframe
-id="mapFrame"
-loading="lazy"
-allowfullscreen
-src="https://maps.google.com/maps?q=花蓮&t=&z=13&ie=UTF8&iwloc=&output=embed">
-</iframe>
+<!-- 🚗 一鍵最佳路線 -->
+<div class="route-box">
+<h3>🚗 一鍵最佳路線</h3>
 
-<!-- GPS資訊 -->
-<div id="locationInfo">
-📍 定位中...
-</div>
+<a class="route-btn" 
+href="https://www.google.com/maps/dir/?api=1&origin=山下陳涼&destination=東大門夜市 花蓮&waypoints=花蓮文化創意產業園區|冠冕民宿 旗艦店"
+target="_blank">
+Day 1 最佳路線
+</a>
 
-<!-- 工具列 -->
-<div class="top-tools">
-
-<button class="btn"
-onclick="findNearby('parking')">
-🅿️ 停車場
-</button>
-
-<button class="btn"
-onclick="findNearby('gas_station')">
-⛽ 加油站
-</button>
-
-<button class="btn"
-onclick="findNearby('便利商店')">
-🏪 超商
-</button>
-
-<button class="btn"
-onclick="findNearby('restaurant')">
-🍜 美食
-</button>
-
-<button class="btn"
-onclick="findNearby('cafe')">
-☕ 咖啡廳
-</button>
+<a class="route-btn" 
+href="https://www.google.com/maps/dir/?api=1&origin=V TREE COFFEE 花蓮&destination=全聯 吉安南濱店&waypoints=花蓮美術館|公正包子 花蓮"
+target="_blank">
+Day 2 最佳路線
+</a>
 
 </div>
 
-<!-- Day -->
+<!-- Day 切換 -->
 <div class="nav">
-
-<button onclick="scrollToDay('day1')">
-Day 1
-</button>
-
-<button onclick="scrollToDay('day2')">
-Day 2
-</button>
-
-<button onclick="scrollToDay('day3')">
-Day 3
-</button>
-
+  <button onclick="goTo('day1')">Day 1</button>
+  <button onclick="goTo('day2')">Day 2</button>
+  <button onclick="goTo('day3')">Day 3</button>
 </div>
 
-<!-- DAY1 -->
+<!-- DAY 1 -->
 <div id="day1">
+<div class="day-title">📅 Day 1</div>
 
-<div class="day-title">
-📅 Day 1
+<div class="card">
+<div class="time">11:30 山下陳涼</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=山下陳涼" target="_blank">📍導航</a>
 </div>
 
 <div class="card">
-
-<div class="place">
-11:30 山下陳涼
-</div>
-
-<div class="time" id="time1">
-🚗 載入車程中...
-</div>
-
-<div class="btn-group">
-
-<button class="btn"
-onclick="showMap(23.9723,121.6067)">
-📍 地圖
-</button>
-
-<button class="btn route-btn"
-onclick="navigateTo('山下陳涼')">
-🚗 導航
-</button>
-
-<button class="btn"
-onclick="toggleDone(this)">
-✅ 完成
-</button>
-
-</div>
-
+<div class="time">➡️ 前往文創園區</div>
+<div class="drive">🚗 約 20 分鐘</div>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=山下陳涼&destination=花蓮文化創意產業園區" target="_blank">導航</a>
 </div>
 
 <div class="card">
-
-<div class="place">
-13:30 花蓮文創園區
-</div>
-
-<div class="time" id="time2">
-🚗 載入車程中...
-</div>
-
-<div class="btn-group">
-
-<button class="btn"
-onclick="showMap(23.9720,121.6045)">
-📍 地圖
-</button>
-
-<button class="btn route-btn"
-onclick="navigateTo('花蓮文化創意產業園區')">
-🚗 導航
-</button>
-
-<button class="btn"
-onclick="toggleDone(this)">
-✅ 完成
-</button>
-
-</div>
-
+<div class="time">13:30 花蓮文創園區</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=花蓮文化創意產業園區" target="_blank">📍導航</a>
+<a class="btn parking" href="https://www.google.com/maps/search/?api=1&query=花蓮文創園區停車場" target="_blank">🅿️停車</a>
 </div>
 
 <div class="card">
-
-<div class="place">
-15:00 冠冕民宿旗艦館
-</div>
-
-<div class="time" id="time3">
-🚗 載入車程中...
-</div>
-
-<div class="btn-group">
-
-<button class="btn"
-onclick="showMap(23.9915,121.6010)">
-📍 地圖
-</button>
-
-<button class="btn route-btn"
-onclick="navigateTo('冠冕民宿 旗艦店')">
-🚗 導航
-</button>
-
-<button class="btn"
-onclick="toggleDone(this)">
-✅ 完成
-</button>
-
-</div>
-
+<div class="time">➡️ 前往民宿</div>
+<div class="drive">🚗 約 15 分鐘</div>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=花蓮文化創意產業園區&destination=冠冕民宿 旗艦店" target="_blank">導航</a>
 </div>
 
 <div class="card">
-
-<div class="place">
-19:00 東大門夜市
+<div class="time">15:00 冠冕民宿（旗艦館）</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=冠冕民宿 旗艦店" target="_blank">📍導航</a>
 </div>
 
-<div class="btn-group">
+<div class="card">
+<div class="time">➡️ 前往夜市</div>
+<div class="drive">🚗 約 15 分鐘</div>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=冠冕民宿 旗艦店&destination=東大門夜市 花蓮" target="_blank">導航</a>
+</div>
 
-<button class="btn"
-onclick="showMap(23.9727,121.6128)">
-📍 地圖
-</button>
-
-<button class="btn route-btn"
-onclick="navigateTo('東大門夜市 花蓮')">
-🚗 導航
-</button>
-
-<button class="btn"
-onclick="toggleDone(this)">
-✅ 完成
-</button>
-
+<div class="card">
+<div class="time">19:00 東大門夜市</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=東大門夜市 花蓮" target="_blank">📍導航</a>
 </div>
 
 </div>
 
-</div>
-
-<!-- DAY2 -->
+<!-- DAY 2 -->
 <div id="day2">
+<div class="day-title">📅 Day 2</div>
 
-<div class="day-title">
-📅 Day 2
+<div class="card">
+<div class="time">10:30 V TREE COFFEE</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=V TREE COFFEE 花蓮" target="_blank">📍導航</a>
 </div>
 
 <div class="card">
-
-<div class="place">
-10:30 V TREE COFFEE
-</div>
-
-<div class="btn-group">
-
-<button class="btn"
-onclick="showMap(23.9898,121.6050)">
-📍 地圖
-</button>
-
-<button class="btn route-btn"
-onclick="navigateTo('V TREE COFFEE 花蓮')">
-🚗 導航
-</button>
-
-<button class="btn"
-onclick="toggleDone(this)">
-✅ 完成
-</button>
-
-</div>
-
+<div class="time">➡️ 前往美術館</div>
+<div class="drive">🚗 約 10 分鐘</div>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=V TREE COFFEE 花蓮&destination=花蓮美術館" target="_blank">導航</a>
 </div>
 
 <div class="card">
-
-<div class="place">
-13:00 花蓮美術館
+<div class="time">13:00 花蓮美術館</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=花蓮美術館" target="_blank">📍導航</a>
 </div>
 
-<div class="btn-group">
+<div class="card">
+<div class="time">➡️ 小吃巡禮</div>
+<div class="drive">🚗 約 10 分鐘</div>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&origin=花蓮美術館&destination=公正包子 花蓮" target="_blank">導航</a>
+</div>
 
-<button class="btn"
-onclick="showMap(23.9908,121.6115)">
-📍 地圖
-</button>
-
-<button class="btn route-btn"
-onclick="navigateTo('花蓮美術館')">
-🚗 導航
-</button>
-
-<button class="btn"
-onclick="toggleDone(this)">
-✅ 完成
-</button>
-
+<div class="card">
+<div class="time">14:30 小吃巡禮</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=公正包子 花蓮" target="_blank">公正包子</a>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=周家蒸餃 花蓮" target="_blank">周家蒸餃</a>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=廟口紅茶 花蓮" target="_blank">廟口紅茶</a>
 </div>
 
 </div>
 
-</div>
-
-<!-- DAY3 -->
+<!-- DAY 3 -->
 <div id="day3">
+<div class="day-title">📅 Day 3</div>
 
-<div class="day-title">
-📅 Day 3
+<div class="card">
+<div class="time">08:00 早餐</div>
+<button onclick="toggle(this)">✅完成</button><br>
+<a class="btn" href="https://www.google.com/maps/search/?api=1&query=斑比早餐店 花蓮" target="_blank">📍導航</a>
 </div>
 
 <div class="card">
-
-<div class="place">
-08:00 斑比早餐店
-</div>
-
-<div class="btn-group">
-
-<button class="btn"
-onclick="showMap(23.9855,121.6018)">
-📍 地圖
-</button>
-
-<button class="btn route-btn"
-onclick="navigateTo('斑比早餐店 花蓮')">
-🚗 導航
-</button>
-
-<button class="btn"
-onclick="toggleDone(this)">
-✅ 完成
-</button>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="place">
-返回台北（礁溪）
-</div>
-
-<div class="btn-group">
-
-<button class="btn route-btn"
-onclick="navigateTo('福哥石窯雞 礁溪')">
-🚗 開始導航
-</button>
-
-</div>
-
+<div class="time">➡️ 福哥石窯雞 礁溪總店</div>
+<a class="btn route" href="https://www.google.com/maps/dir/?api=1&destination=福哥石窯雞 礁溪" target="_blank">導航</a>
 </div>
 
 </div>
 
 <script>
-
-/* ===== Google Maps 顯示 ===== */
-
-function showMap(lat,lng){
-
-  document
-  .getElementById("mapFrame")
-  .src =
-
-  `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+function toggle(btn){
+  btn.parentElement.classList.toggle("done");
 }
 
-/* ===== Google導航 ===== */
-
-function navigateTo(place){
-
-  window.open(
-  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place)}`,
-  '_blank'
-  );
+function goTo(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
 }
-
-/* ===== Day切換 ===== */
-
-function scrollToDay(id){
-
-  document
-  .getElementById(id)
-  .scrollIntoView({
-    behavior:'smooth'
-  });
-}
-
-/* ===== 完成 ===== */
-
-function toggleDone(btn){
-
-  btn.parentElement.parentElement
-  .classList.toggle('done');
-}
-
-/* ===== 即時車程（免費OSRM） ===== */
-
-async function getDriveTime(
-startLat,
-startLng,
-endLat,
-endLng,
-elementId
-){
-
-  const url =
-  `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=false`;
-
-  const response =
-  await fetch(url);
-
-  const data =
-  await response.json();
-
-  const seconds =
-  data.routes[0].duration;
-
-  const minutes =
-  Math.round(seconds / 60);
-
-  document
-  .getElementById(elementId)
-  .innerHTML =
-
-  `🚗 即時車程：約 ${minutes} 分鐘`;
-}
-
-/* ===== GPS定位 ===== */
-
-const tripSpots = [
-
-{
-name:"山下陳涼",
-lat:23.9723,
-lng:121.6067
-},
-
-{
-name:"花蓮文創園區",
-lat:23.9720,
-lng:121.6045
-},
-
-{
-name:"冠冕民宿旗艦館",
-lat:23.9915,
-lng:121.6010
-},
-
-{
-name:"東大門夜市",
-lat:23.9727,
-lng:121.6128
-}
-
-];
-
-/* 計算距離 */
-
-function getDistance(
-lat1,lng1,
-lat2,lng2
-){
-
-const R = 6371;
-
-const dLat =
-(lat2-lat1) *
-Math.PI / 180;
-
-const dLng =
-(lng2-lng1) *
-Math.PI / 180;
-
-const a =
-Math.sin(dLat/2) *
-Math.sin(dLat/2) +
-
-Math.cos(lat1*Math.PI/180) *
-Math.cos(lat2*Math.PI/180) *
-
-Math.sin(dLng/2) *
-Math.sin(dLng/2);
-
-const c =
-2 * Math.atan2(
-Math.sqrt(a),
-Math.sqrt(1-a)
-);
-
-return R*c;
-}
-
-/* 自動定位 */
-
-function autoLocate(){
-
-if(!navigator.geolocation){
-
-document
-.getElementById("locationInfo")
-.innerHTML =
-"❌ 無法定位";
-
-return;
-}
-
-navigator.geolocation.getCurrentPosition(
-(position)=>{
-
-const lat =
-position.coords.latitude;
-
-const lng =
-position.coords.longitude;
-
-showMap(lat,lng);
-
-let nearest = null;
-
-let minDistance =
-Infinity;
-
-tripSpots.forEach(spot=>{
-
-const distance =
-getDistance(
-lat,lng,
-spot.lat,spot.lng
-);
-
-if(distance < minDistance){
-
-minDistance =
-distance;
-
-nearest = spot;
-}
-
-});
-
-document
-.getElementById("locationInfo")
-.innerHTML =
-
-`
-📍 最近行程點：
-<b>${nearest.name}</b>
-
-<br><br>
-
-🚗 距離約：
-${minDistance.toFixed(1)} km
-
-<br><br>
-
-<button
-class="btn route-btn"
-onclick="navigateTo('${nearest.name}')">
-立即導航
-</button>
-`;
-
-});
-}
-
-/* ===== 附近搜尋 ===== */
-
-function findNearby(type){
-
-if(!navigator.geolocation){
-
-alert("無法取得定位");
-
-return;
-}
-
-navigator.geolocation.getCurrentPosition(
-(position)=>{
-
-const lat =
-position.coords.latitude;
-
-const lng =
-position.coords.longitude;
-
-document
-.getElementById("mapFrame")
-.src =
-
-`https://maps.google.com/maps?q=${type}%20near%20${lat},${lng}&z=15&output=embed`;
-
-});
-}
-
-/* ===== 初始化 ===== */
-
-autoLocate();
-
-getDriveTime(
-23.9723,121.6067,
-23.9720,121.6045,
-'time1'
-);
-
-getDriveTime(
-23.9720,121.6045,
-23.9915,121.6010,
-'time2'
-);
-
-getDriveTime(
-23.9915,121.6010,
-23.9727,121.6128,
-'time3'
-);
-
 </script>
 
 </body>
