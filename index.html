@@ -130,6 +130,16 @@ header{
 
 <!-- 地圖 -->
 <div id="map"></div>
+<div id="locationInfo"
+style="
+background:white;
+padding:12px;
+font-size:16px;
+font-weight:bold;
+border-bottom:1px solid #ddd;
+">
+📍 定位中...
+</div>
 
 <!-- 工具列 -->
 <div class="top-tools">
@@ -571,7 +581,187 @@ getDriveTime(
 23.9727,121.6128,
 'time3'
 );
+/* ===== 自動定位模式 ===== */
 
+/* 所有行程點 */
+const tripSpots = [
+
+{
+  name:"山下陳涼",
+  lat:23.9723,
+  lng:121.6067
+},
+
+{
+  name:"花蓮文創園區",
+  lat:23.9720,
+  lng:121.6045
+},
+
+{
+  name:"冠冕民宿旗艦館",
+  lat:23.9915,
+  lng:121.6010
+},
+
+{
+  name:"東大門夜市",
+  lat:23.9727,
+  lng:121.6128
+},
+
+{
+  name:"V TREE COFFEE",
+  lat:23.9898,
+  lng:121.6050
+},
+
+{
+  name:"花蓮美術館",
+  lat:23.9908,
+  lng:121.6115
+},
+
+{
+  name:"斑比早餐店",
+  lat:23.9855,
+  lng:121.6018
+}
+
+];
+
+/* 計算距離 */
+function getDistance(lat1,lng1,lat2,lng2){
+
+  const R = 6371;
+
+  const dLat =
+  (lat2-lat1) * Math.PI / 180;
+
+  const dLng =
+  (lng2-lng1) * Math.PI / 180;
+
+  const a =
+  Math.sin(dLat/2) *
+  Math.sin(dLat/2) +
+
+  Math.cos(lat1*Math.PI/180) *
+  Math.cos(lat2*Math.PI/180) *
+
+  Math.sin(dLng/2) *
+  Math.sin(dLng/2);
+
+  const c =
+  2 * Math.atan2(
+    Math.sqrt(a),
+    Math.sqrt(1-a)
+  );
+
+  return R * c;
+}
+
+/* 自動定位 */
+function autoLocate(){
+
+  if(!navigator.geolocation){
+
+    document
+    .getElementById("locationInfo")
+    .innerHTML =
+    "❌ 裝置不支援定位";
+
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+  (position)=>{
+
+    const lat =
+    position.coords.latitude;
+
+    const lng =
+    position.coords.longitude;
+
+    /* 地圖移動 */
+    map.setView([lat,lng],15);
+
+    /* 使用者marker */
+    const userMarker =
+    L.marker([lat,lng])
+    .addTo(map)
+    .bindPopup("📍 你目前位置")
+    .openPopup();
+
+    /* 找最近景點 */
+    let nearest = null;
+
+    let minDistance = Infinity;
+
+    tripSpots.forEach(spot=>{
+
+      const distance =
+      getDistance(
+        lat,lng,
+        spot.lat,spot.lng
+      );
+
+      if(distance < minDistance){
+
+        minDistance = distance;
+
+        nearest = spot;
+      }
+    });
+
+    /* 顯示資訊 */
+    document
+    .getElementById("locationInfo")
+    .innerHTML =
+
+    `
+    📍 你目前位置附近：
+    <br><br>
+
+    🎯 最近行程點：
+    ${nearest.name}
+
+    <br><br>
+
+    🚗 距離約：
+    ${minDistance.toFixed(1)} km
+
+    <br><br>
+
+    <a
+    href="
+    https://www.google.com/maps/dir/?api=1&destination=${nearest.name}
+    "
+    target="_blank"
+    style="
+    background:#ff6600;
+    color:white;
+    padding:8px 12px;
+    border-radius:8px;
+    text-decoration:none;
+    ">
+    🚗 立即導航
+    </a>
+    `;
+
+  },
+
+  ()=>{
+
+    document
+    .getElementById("locationInfo")
+    .innerHTML =
+    "❌ 定位失敗";
+
+  });
+}
+
+/* 啟動自動定位 */
+autoLocate();
 </script>
 
 </body>
