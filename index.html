@@ -172,7 +172,7 @@ onclick="findNearby('gas_station')">
 </button>
 
 <button class="btn"
-onclick="findNearby('便利商店')">
+onclick="findNearby('convenience')">
 🏪 超商
 </button>
 
@@ -784,13 +784,61 @@ position.coords.latitude;
 const lng =
 position.coords.longitude;
 
+let keyword = '';
+
+/* 關鍵字轉換 */
+
+switch(type){
+
+case 'parking':
+keyword = '停車場';
+break;
+
+case 'gas_station':
+keyword = '加油站';
+break;
+
+case 'convenience':
+keyword = '便利商店';
+break;
+
+case 'restaurant':
+keyword = '美食';
+break;
+
+case 'cafe':
+keyword = '咖啡廳';
+break;
+
+default:
+keyword = type;
+}
+
+/* Google Maps 搜尋 */
+
+const mapUrl =
+
+`https://www.google.com/maps?q=${encodeURIComponent(keyword)}&ll=${lat},${lng}&z=15&output=embed`;
+
 document
 .getElementById("mapFrame")
-.src =
+.src = mapUrl;
 
-`https://maps.google.com/maps?q=${type}%20near%20${lat},${lng}&z=15&output=embed`;
+},
 
-});
+(error)=>{
+
+alert("定位失敗，請確認已開啟定位權限");
+
+},
+
+{
+enableHighAccuracy:true,
+timeout:10000,
+maximumAge:0
+}
+
+);
 
 }
 
