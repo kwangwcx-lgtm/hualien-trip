@@ -4,105 +4,118 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>花蓮旅遊 App V6</title>
-
-<!-- Leaflet -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>花蓮旅遊 App Google Maps 版</title>
 
 <style>
+
 body{
   margin:0;
-  font-family:Arial;
-  background:#f5f5f5;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#f4f4f4;
+  color:#222;
 }
 
 header{
-  background:#0077cc;
+  background:#007AFF;
   color:white;
   text-align:center;
-  padding:16px;
-  font-size:22px;
-  font-weight:bold;
+  padding:18px;
+  font-size:24px;
+  font-weight:700;
 }
 
-#map{
+/* Google Maps */
+#mapFrame{
   width:100%;
   height:320px;
+  border:none;
 }
 
-.top-tools{
+/* 定位資訊 */
+#locationInfo{
   background:white;
-  padding:12px;
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  flex-wrap:wrap;
+  padding:14px;
+  font-size:15px;
+  line-height:1.6;
   border-bottom:1px solid #ddd;
 }
 
-.nav{
+/* 工具列 */
+.top-tools{
   display:flex;
-  justify-content:space-around;
-  padding:10px;
+  gap:10px;
+  overflow-x:auto;
+  padding:12px;
   background:white;
+  border-bottom:1px solid #ddd;
+}
+
+.top-tools button{
+  white-space:nowrap;
+}
+
+/* Day導航 */
+.nav{
   position:sticky;
   top:0;
   z-index:999;
+  display:flex;
+  justify-content:space-around;
+  background:white;
+  padding:10px;
   border-bottom:1px solid #ddd;
 }
 
 .nav button{
-  background:#0077cc;
+  background:#007AFF;
   color:white;
   border:none;
+  border-radius:12px;
   padding:10px 16px;
-  border-radius:10px;
   font-size:14px;
+  font-weight:600;
 }
 
+/* 區塊 */
 .day-title{
-  padding:12px;
+  padding:16px 14px 6px;
   font-size:22px;
-  font-weight:bold;
+  font-weight:700;
 }
 
 .card{
   background:white;
   margin:12px;
+  border-radius:20px;
   padding:16px;
-  border-radius:16px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  box-shadow:0 3px 10px rgba(0,0,0,0.08);
 }
 
 .place{
-  font-size:18px;
-  font-weight:bold;
+  font-size:19px;
+  font-weight:700;
 }
 
 .time{
-  margin-top:6px;
+  margin-top:8px;
   color:#ff6600;
+  font-size:15px;
 }
 
 .btn-group{
-  margin-top:12px;
+  margin-top:14px;
 }
 
 .btn{
   display:inline-block;
-  text-decoration:none;
-  background:#0077cc;
-  color:white;
+  border:none;
+  border-radius:12px;
   padding:10px 14px;
-  border-radius:10px;
   margin-right:8px;
   margin-top:8px;
-  border:none;
+  text-decoration:none;
+  color:white;
+  background:#007AFF;
   font-size:14px;
   cursor:pointer;
 }
@@ -112,32 +125,29 @@ header{
 }
 
 .done{
-  opacity:0.5;
+  opacity:0.45;
   text-decoration:line-through;
 }
 
-.popup-title{
-  font-weight:bold;
-}
 </style>
 </head>
 
 <body>
 
 <header>
-🌊 花蓮旅遊 App V6
+🌊 花蓮旅遊 App
 </header>
 
-<!-- 地圖 -->
-<div id="map"></div>
-<div id="locationInfo"
-style="
-background:white;
-padding:12px;
-font-size:16px;
-font-weight:bold;
-border-bottom:1px solid #ddd;
-">
+<!-- Google Maps -->
+<iframe
+id="mapFrame"
+loading="lazy"
+allowfullscreen
+src="https://maps.google.com/maps?q=花蓮&t=&z=13&ie=UTF8&iwloc=&output=embed">
+</iframe>
+
+<!-- GPS資訊 -->
+<div id="locationInfo">
 📍 定位中...
 </div>
 
@@ -146,310 +156,337 @@ border-bottom:1px solid #ddd;
 
 <button class="btn"
 onclick="findNearby('parking')">
-🅿️ 最近停車場
+🅿️ 停車場
 </button>
 
 <button class="btn"
-onclick="findNearby('fuel')">
-⛽ 最近加油站
+onclick="findNearby('gas_station')">
+⛽ 加油站
 </button>
 
 <button class="btn"
-onclick="findNearby('convenience')">
-🏪 附近超商
+onclick="findNearby('便利商店')">
+🏪 超商
+</button>
+
+<button class="btn"
+onclick="findNearby('restaurant')">
+🍜 美食
+</button>
+
+<button class="btn"
+onclick="findNearby('cafe')">
+☕ 咖啡廳
 </button>
 
 </div>
 
-<!-- Day切換 -->
+<!-- Day -->
 <div class="nav">
-  <button onclick="scrollToDay('day1')">Day 1</button>
-  <button onclick="scrollToDay('day2')">Day 2</button>
-  <button onclick="scrollToDay('day3')">Day 3</button>
+
+<button onclick="scrollToDay('day1')">
+Day 1
+</button>
+
+<button onclick="scrollToDay('day2')">
+Day 2
+</button>
+
+<button onclick="scrollToDay('day3')">
+Day 3
+</button>
+
 </div>
 
-<!-- DAY 1 -->
+<!-- DAY1 -->
 <div id="day1">
 
-<div class="day-title">📅 Day 1</div>
-
-<div class="card">
-  <div class="place">11:30 山下陳涼</div>
-
-  <div class="time" id="time1">
-    🚗 載入車程中...
-  </div>
-
-  <div class="btn-group">
-
-    <button class="btn"
-    onclick="showMap(23.9723,121.6067,'山下陳涼')">
-      📍 地圖
-    </button>
-
-    <a
-      class="btn route-btn"
-      href="https://www.google.com/maps/dir/?api=1&destination=山下陳涼"
-      target="_blank">
-      🚗 導航
-    </a>
-
-    <button class="btn"
-    onclick="toggleDone(this)">
-      ✅ 完成
-    </button>
-
-  </div>
+<div class="day-title">
+📅 Day 1
 </div>
 
 <div class="card">
-  <div class="place">13:30 花蓮文創園區</div>
 
-  <div class="time" id="time2">
-    🚗 載入車程中...
-  </div>
+<div class="place">
+11:30 山下陳涼
+</div>
 
-  <div class="btn-group">
+<div class="time" id="time1">
+🚗 載入車程中...
+</div>
 
-    <button class="btn"
-    onclick="showMap(23.9720,121.6045,'花蓮文創園區')">
-      📍 地圖
-    </button>
+<div class="btn-group">
 
-    <a
-      class="btn route-btn"
-      href="https://www.google.com/maps/dir/?api=1&destination=花蓮文化創意產業園區"
-      target="_blank">
-      🚗 導航
-    </a>
+<button class="btn"
+onclick="showMap(23.9723,121.6067)">
+📍 地圖
+</button>
 
-    <button class="btn"
-    onclick="toggleDone(this)">
-      ✅ 完成
-    </button>
+<button class="btn route-btn"
+onclick="navigateTo('山下陳涼')">
+🚗 導航
+</button>
 
-  </div>
+<button class="btn"
+onclick="toggleDone(this)">
+✅ 完成
+</button>
+
+</div>
+
 </div>
 
 <div class="card">
-  <div class="place">15:00 冠冕民宿旗艦館</div>
 
-  <div class="time" id="time3">
-    🚗 載入車程中...
-  </div>
+<div class="place">
+13:30 花蓮文創園區
+</div>
 
-  <div class="btn-group">
+<div class="time" id="time2">
+🚗 載入車程中...
+</div>
 
-    <button class="btn"
-    onclick="showMap(23.9915,121.6010,'冠冕民宿旗艦館')">
-      📍 地圖
-    </button>
+<div class="btn-group">
 
-    <a
-      class="btn route-btn"
-      href="https://www.google.com/maps/dir/?api=1&destination=冠冕民宿 旗艦店"
-      target="_blank">
-      🚗 導航
-    </a>
+<button class="btn"
+onclick="showMap(23.9720,121.6045)">
+📍 地圖
+</button>
 
-    <button class="btn"
-    onclick="toggleDone(this)">
-      ✅ 完成
-    </button>
+<button class="btn route-btn"
+onclick="navigateTo('花蓮文化創意產業園區')">
+🚗 導航
+</button>
 
-  </div>
+<button class="btn"
+onclick="toggleDone(this)">
+✅ 完成
+</button>
+
+</div>
+
 </div>
 
 <div class="card">
-  <div class="place">19:00 東大門夜市</div>
 
-  <div class="btn-group">
+<div class="place">
+15:00 冠冕民宿旗艦館
+</div>
 
-    <button class="btn"
-    onclick="showMap(23.9727,121.6128,'東大門夜市')">
-      📍 地圖
-    </button>
+<div class="time" id="time3">
+🚗 載入車程中...
+</div>
 
-    <a
-      class="btn route-btn"
-      href="https://www.google.com/maps/dir/?api=1&destination=東大門夜市"
-      target="_blank">
-      🚗 導航
-    </a>
+<div class="btn-group">
 
-    <button class="btn"
-    onclick="toggleDone(this)">
-      ✅ 完成
-    </button>
+<button class="btn"
+onclick="showMap(23.9915,121.6010)">
+📍 地圖
+</button>
 
-  </div>
+<button class="btn route-btn"
+onclick="navigateTo('冠冕民宿 旗艦店')">
+🚗 導航
+</button>
+
+<button class="btn"
+onclick="toggleDone(this)">
+✅ 完成
+</button>
+
 </div>
 
 </div>
 
-<!-- DAY 2 -->
+<div class="card">
+
+<div class="place">
+19:00 東大門夜市
+</div>
+
+<div class="btn-group">
+
+<button class="btn"
+onclick="showMap(23.9727,121.6128)">
+📍 地圖
+</button>
+
+<button class="btn route-btn"
+onclick="navigateTo('東大門夜市 花蓮')">
+🚗 導航
+</button>
+
+<button class="btn"
+onclick="toggleDone(this)">
+✅ 完成
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- DAY2 -->
 <div id="day2">
 
-<div class="day-title">📅 Day 2</div>
-
-<div class="card">
-  <div class="place">10:30 V TREE COFFEE</div>
-
-  <div class="btn-group">
-
-    <button class="btn"
-    onclick="showMap(23.9898,121.6050,'V TREE COFFEE')">
-      📍 地圖
-    </button>
-
-    <button class="btn"
-    onclick="toggleDone(this)">
-      ✅ 完成
-    </button>
-
-  </div>
+<div class="day-title">
+📅 Day 2
 </div>
 
 <div class="card">
-  <div class="place">13:00 花蓮美術館</div>
 
-  <div class="btn-group">
+<div class="place">
+10:30 V TREE COFFEE
+</div>
 
-    <button class="btn"
-    onclick="showMap(23.9908,121.6115,'花蓮美術館')">
-      📍 地圖
-    </button>
+<div class="btn-group">
 
-    <button class="btn"
-    onclick="toggleDone(this)">
-      ✅ 完成
-    </button>
+<button class="btn"
+onclick="showMap(23.9898,121.6050)">
+📍 地圖
+</button>
 
-  </div>
+<button class="btn route-btn"
+onclick="navigateTo('V TREE COFFEE 花蓮')">
+🚗 導航
+</button>
+
+<button class="btn"
+onclick="toggleDone(this)">
+✅ 完成
+</button>
+
+</div>
+
 </div>
 
 <div class="card">
-  <div class="place">14:00 小吃巡禮</div>
 
-  <div class="btn-group">
+<div class="place">
+13:00 花蓮美術館
+</div>
 
-    <button class="btn"
-    onclick="showMap(23.9760,121.6047,'公正包子')">
-      🥟 公正包子
-    </button>
+<div class="btn-group">
 
-    <button class="btn"
-    onclick="showMap(23.9755,121.6050,'周家蒸餃')">
-      🥟 周家蒸餃
-    </button>
+<button class="btn"
+onclick="showMap(23.9908,121.6115)">
+📍 地圖
+</button>
 
-    <button class="btn"
-    onclick="showMap(23.9752,121.6044,'廟口紅茶')">
-      🧋 廟口紅茶
-    </button>
+<button class="btn route-btn"
+onclick="navigateTo('花蓮美術館')">
+🚗 導航
+</button>
 
-  </div>
+<button class="btn"
+onclick="toggleDone(this)">
+✅ 完成
+</button>
+
 </div>
 
 </div>
 
-<!-- DAY 3 -->
+</div>
+
+<!-- DAY3 -->
 <div id="day3">
 
-<div class="day-title">📅 Day 3</div>
-
-<div class="card">
-  <div class="place">08:00 斑比早餐店</div>
-
-  <div class="btn-group">
-
-    <button class="btn"
-    onclick="showMap(23.9855,121.6018,'斑比早餐店')">
-      📍 地圖
-    </button>
-
-    <button class="btn"
-    onclick="toggleDone(this)">
-      ✅ 完成
-    </button>
-
-  </div>
+<div class="day-title">
+📅 Day 3
 </div>
 
 <div class="card">
-  <div class="place">返回台北（礁溪）</div>
 
-  <div class="btn-group">
+<div class="place">
+08:00 斑比早餐店
+</div>
 
-    <a
-      class="btn route-btn"
-      href="https://www.google.com/maps/dir/?api=1&destination=福哥石窯雞 礁溪"
-      target="_blank">
-      🚗 開始導航
-    </a>
+<div class="btn-group">
 
-  </div>
+<button class="btn"
+onclick="showMap(23.9855,121.6018)">
+📍 地圖
+</button>
+
+<button class="btn route-btn"
+onclick="navigateTo('斑比早餐店 花蓮')">
+🚗 導航
+</button>
+
+<button class="btn"
+onclick="toggleDone(this)">
+✅ 完成
+</button>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="place">
+返回台北（礁溪）
+</div>
+
+<div class="btn-group">
+
+<button class="btn route-btn"
+onclick="navigateTo('福哥石窯雞 礁溪')">
+🚗 開始導航
+</button>
+
+</div>
+
 </div>
 
 </div>
 
 <script>
 
-/* 初始化地圖 */
-const map = L.map('map').setView([23.987,121.601], 13);
+/* ===== Google Maps 顯示 ===== */
 
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
- attribution:'© OpenStreetMap'
-}
-).addTo(map);
+function showMap(lat,lng){
 
-let marker;
-let nearbyMarkers = [];
+  document
+  .getElementById("mapFrame")
+  .src =
 
-/* 顯示地圖 */
-function showMap(lat,lng,name){
-
-  clearNearby();
-
-  if(marker){
-    map.removeLayer(marker);
-  }
-
-  marker = L.marker([lat,lng])
-  .addTo(map)
-  .bindPopup(`<div class="popup-title">${name}</div>`)
-  .openPopup();
-
-  map.setView([lat,lng],15);
+  `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
 }
 
-/* Day切換 */
+/* ===== Google導航 ===== */
+
+function navigateTo(place){
+
+  window.open(
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place)}`,
+  '_blank'
+  );
+}
+
+/* ===== Day切換 ===== */
+
 function scrollToDay(id){
-  document.getElementById(id)
+
+  document
+  .getElementById(id)
   .scrollIntoView({
     behavior:'smooth'
   });
 }
 
-/* 完成 */
+/* ===== 完成 ===== */
+
 function toggleDone(btn){
+
   btn.parentElement.parentElement
   .classList.toggle('done');
 }
 
-/* 清除附近marker */
-function clearNearby(){
+/* ===== 即時車程（免費OSRM） ===== */
 
-  nearbyMarkers.forEach(m=>{
-    map.removeLayer(m);
-  });
-
-  nearbyMarkers = [];
-}
-
-/* 免費即時車程 */
 async function getDriveTime(
 startLat,
 startLng,
@@ -461,9 +498,11 @@ elementId
   const url =
   `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=false`;
 
-  const response = await fetch(url);
+  const response =
+  await fetch(url);
 
-  const data = await response.json();
+  const data =
+  await response.json();
 
   const seconds =
   data.routes[0].duration;
@@ -471,99 +510,185 @@ elementId
   const minutes =
   Math.round(seconds / 60);
 
-  document.getElementById(elementId)
+  document
+  .getElementById(elementId)
   .innerHTML =
+
   `🚗 即時車程：約 ${minutes} 分鐘`;
 }
 
-/* 附近搜尋 */
-async function findNearby(type){
+/* ===== GPS定位 ===== */
 
-  if(!navigator.geolocation){
+const tripSpots = [
 
-    alert("你的裝置不支援定位");
+{
+name:"山下陳涼",
+lat:23.9723,
+lng:121.6067
+},
 
-    return;
-  }
+{
+name:"花蓮文創園區",
+lat:23.9720,
+lng:121.6045
+},
 
-  navigator.geolocation.getCurrentPosition(
-  async (position)=>{
+{
+name:"冠冕民宿旗艦館",
+lat:23.9915,
+lng:121.6010
+},
 
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
-
-    let queryType = '';
-
-    if(type === 'parking'){
-      queryType = 'parking';
-    }
-
-    if(type === 'fuel'){
-      queryType = 'fuel';
-    }
-
-    if(type === 'convenience'){
-      queryType = 'convenience';
-    }
-
-    const query = `
-    [out:json];
-    (
-      node["amenity"="${queryType}"](around:3000,${lat},${lng});
-    );
-    out;
-    `;
-
-    const url =
-    "https://overpass-api.de/api/interpreter?data="
-    + encodeURIComponent(query);
-
-    const response =
-    await fetch(url);
-
-    const data =
-    await response.json();
-
-    clearNearby();
-
-    /* 目前位置 */
-    const userMarker =
-    L.marker([lat,lng])
-    .addTo(map)
-    .bindPopup("📍 你的位置")
-    .openPopup();
-
-    nearbyMarkers.push(userMarker);
-
-    /* 顯示搜尋結果 */
-    data.elements.forEach(place=>{
-
-      const marker =
-      L.marker([place.lat, place.lon])
-      .addTo(map);
-
-      const name =
-      place.tags.name ||
-      (
-        type === 'parking'
-        ? '停車場'
-        : type === 'fuel'
-        ? '加油站'
-        : '便利商店'
-      );
-
-      marker.bindPopup(name);
-
-      nearbyMarkers.push(marker);
-
-    });
-
-    map.setView([lat,lng],14);
-
-  });
+{
+name:"東大門夜市",
+lat:23.9727,
+lng:121.6128
 }
 
-/* 即時車程 */
+];
+
+/* 計算距離 */
+
+function getDistance(
+lat1,lng1,
+lat2,lng2
+){
+
+const R = 6371;
+
+const dLat =
+(lat2-lat1) *
+Math.PI / 180;
+
+const dLng =
+(lng2-lng1) *
+Math.PI / 180;
+
+const a =
+Math.sin(dLat/2) *
+Math.sin(dLat/2) +
+
+Math.cos(lat1*Math.PI/180) *
+Math.cos(lat2*Math.PI/180) *
+
+Math.sin(dLng/2) *
+Math.sin(dLng/2);
+
+const c =
+2 * Math.atan2(
+Math.sqrt(a),
+Math.sqrt(1-a)
+);
+
+return R*c;
+}
+
+/* 自動定位 */
+
+function autoLocate(){
+
+if(!navigator.geolocation){
+
+document
+.getElementById("locationInfo")
+.innerHTML =
+"❌ 無法定位";
+
+return;
+}
+
+navigator.geolocation.getCurrentPosition(
+(position)=>{
+
+const lat =
+position.coords.latitude;
+
+const lng =
+position.coords.longitude;
+
+showMap(lat,lng);
+
+let nearest = null;
+
+let minDistance =
+Infinity;
+
+tripSpots.forEach(spot=>{
+
+const distance =
+getDistance(
+lat,lng,
+spot.lat,spot.lng
+);
+
+if(distance < minDistance){
+
+minDistance =
+distance;
+
+nearest = spot;
+}
+
+});
+
+document
+.getElementById("locationInfo")
+.innerHTML =
+
+`
+📍 最近行程點：
+<b>${nearest.name}</b>
+
+<br><br>
+
+🚗 距離約：
+${minDistance.toFixed(1)} km
+
+<br><br>
+
+<button
+class="btn route-btn"
+onclick="navigateTo('${nearest.name}')">
+立即導航
+</button>
+`;
+
+});
+}
+
+/* ===== 附近搜尋 ===== */
+
+function findNearby(type){
+
+if(!navigator.geolocation){
+
+alert("無法取得定位");
+
+return;
+}
+
+navigator.geolocation.getCurrentPosition(
+(position)=>{
+
+const lat =
+position.coords.latitude;
+
+const lng =
+position.coords.longitude;
+
+document
+.getElementById("mapFrame")
+.src =
+
+`https://maps.google.com/maps?q=${type}%20near%20${lat},${lng}&z=15&output=embed`;
+
+});
+}
+
+/* ===== 初始化 ===== */
+
+autoLocate();
+
 getDriveTime(
 23.9723,121.6067,
 23.9720,121.6045,
@@ -581,187 +706,7 @@ getDriveTime(
 23.9727,121.6128,
 'time3'
 );
-/* ===== 自動定位模式 ===== */
 
-/* 所有行程點 */
-const tripSpots = [
-
-{
-  name:"山下陳涼",
-  lat:23.9723,
-  lng:121.6067
-},
-
-{
-  name:"花蓮文創園區",
-  lat:23.9720,
-  lng:121.6045
-},
-
-{
-  name:"冠冕民宿旗艦館",
-  lat:23.9915,
-  lng:121.6010
-},
-
-{
-  name:"東大門夜市",
-  lat:23.9727,
-  lng:121.6128
-},
-
-{
-  name:"V TREE COFFEE",
-  lat:23.9898,
-  lng:121.6050
-},
-
-{
-  name:"花蓮美術館",
-  lat:23.9908,
-  lng:121.6115
-},
-
-{
-  name:"斑比早餐店",
-  lat:23.9855,
-  lng:121.6018
-}
-
-];
-
-/* 計算距離 */
-function getDistance(lat1,lng1,lat2,lng2){
-
-  const R = 6371;
-
-  const dLat =
-  (lat2-lat1) * Math.PI / 180;
-
-  const dLng =
-  (lng2-lng1) * Math.PI / 180;
-
-  const a =
-  Math.sin(dLat/2) *
-  Math.sin(dLat/2) +
-
-  Math.cos(lat1*Math.PI/180) *
-  Math.cos(lat2*Math.PI/180) *
-
-  Math.sin(dLng/2) *
-  Math.sin(dLng/2);
-
-  const c =
-  2 * Math.atan2(
-    Math.sqrt(a),
-    Math.sqrt(1-a)
-  );
-
-  return R * c;
-}
-
-/* 自動定位 */
-function autoLocate(){
-
-  if(!navigator.geolocation){
-
-    document
-    .getElementById("locationInfo")
-    .innerHTML =
-    "❌ 裝置不支援定位";
-
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-  (position)=>{
-
-    const lat =
-    position.coords.latitude;
-
-    const lng =
-    position.coords.longitude;
-
-    /* 地圖移動 */
-    map.setView([lat,lng],15);
-
-    /* 使用者marker */
-    const userMarker =
-    L.marker([lat,lng])
-    .addTo(map)
-    .bindPopup("📍 你目前位置")
-    .openPopup();
-
-    /* 找最近景點 */
-    let nearest = null;
-
-    let minDistance = Infinity;
-
-    tripSpots.forEach(spot=>{
-
-      const distance =
-      getDistance(
-        lat,lng,
-        spot.lat,spot.lng
-      );
-
-      if(distance < minDistance){
-
-        minDistance = distance;
-
-        nearest = spot;
-      }
-    });
-
-    /* 顯示資訊 */
-    document
-    .getElementById("locationInfo")
-    .innerHTML =
-
-    `
-    📍 你目前位置附近：
-    <br><br>
-
-    🎯 最近行程點：
-    ${nearest.name}
-
-    <br><br>
-
-    🚗 距離約：
-    ${minDistance.toFixed(1)} km
-
-    <br><br>
-
-    <a
-    href="
-    https://www.google.com/maps/dir/?api=1&destination=${nearest.name}
-    "
-    target="_blank"
-    style="
-    background:#ff6600;
-    color:white;
-    padding:8px 12px;
-    border-radius:8px;
-    text-decoration:none;
-    ">
-    🚗 立即導航
-    </a>
-    `;
-
-  },
-
-  ()=>{
-
-    document
-    .getElementById("locationInfo")
-    .innerHTML =
-    "❌ 定位失敗";
-
-  });
-}
-
-/* 啟動自動定位 */
-autoLocate();
 </script>
 
 </body>
